@@ -48,12 +48,11 @@ switch config
         settings.write.stream.figures = 1;
         settings.write.stream.full = 1;
         %% OFFLINE PRETRAINING DATASTREAM SETTINGS
-        settings.stream.offline.perimovement_segment=[-3 4];
-        settings.stream.resample_rate = 5;
-        settings.stream.normalization_time = 5;
-        settings.stream.freqranges = [4 8;8 12;13 20;20 35;13 35;60 80;90 200];
-        settings.stream.seglengths = [1 2 2 3 3 10 10]; % FRACTION OF RESAMPLING RATE
-        settings.stream.freqnames = {'theta','alpha','low_beta','high_beta','beta','low_gamma','high_gamma'};
-     
+        settings.stream.perimovement_segment=[-6 7];
+        settings.stream.resample_rate = 10;
+        settings.stream.normalization_time = 10;
+        settings.stream.freqranges = [4 8;8 12;13 20;20 35;13 35;60 80;90 200;60 200];
+        settings.stream.seglengths = [1 2 2 3 3 3 10 10 10]; % FRACTION OF RESAMPLING RATE
+        settings.stream.freqnames = {'theta','alpha','low_beta','high_beta','full_beta','low_gamma','high_gamma','full_gamma'};
         settings.stream.movement.smoothing = .2;
 end

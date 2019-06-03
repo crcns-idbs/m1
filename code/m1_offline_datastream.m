@@ -48,13 +48,13 @@ for a = 1:length(movement_numbers)
             for c =1:length(lfp.i)
                 [lfp.projection_matrix,lfp.summed_projection_matrix,lfp.grid_distance] = m1_projection_matrix(lfp.adjusted_location,settings.grid.full.bilateral,settings.grid.lfp.(lfp.target{c}).max_distance);
                 np = np+1;
-                if strcmp(lfp.rereferencing_method{c},'grandmean')
-                    projection_matrix(np,:) = lfp.summed_projection_matrix;
-                    projection_index(np) = lfp.i(c);
-                else
+%                 if strcmp(lfp.rereferencing_method{c},'grandmean')
+%                     projection_matrix(np,:) = lfp.summed_projection_matrix;
+%                     projection_index(np) = lfp.i(c);
+%                 else
                     projection_matrix(np,:)= lfp.projection_matrix(c,:);
                     projection_index(np) = lfp.i(c);
-                end
+%                 end
             end
             
             
@@ -79,13 +79,13 @@ for a = 1:length(movement_numbers)
             
             for c = 1:length(ecog.i)
                 np = np+1;
-                if strcmp(ecog.rereferencing_method{c},'grandmean')
-                    projection_matrix(np,:) = ecog.summed_projection_matrix;
-                    projection_index(np) = ecog.i(c);
-                else
+%                 if strcmp(ecog.rereferencing_method{c},'grandmean')
+%                     projection_matrix(np,:) = ecog.summed_projection_matrix;
+%                     projection_index(np) = ecog.i(c);
+%                 else
                     projection_matrix(np,:)= ecog.projection_matrix(c,:);
                     projection_index(np) = ecog.i(c);
-                end
+%                 end
             end
             
             
@@ -133,18 +133,18 @@ for a = 1:length(movement_numbers)
         stream.settings.projection_matrix = projection_matrix;
         stream.raw.movement= smooth(raw.data(movement.i,:),round(raw.fs*stream.settings.movement.smoothing))';       
         % FIND MOVEMENT THRESHOLD
-       s=sort(stream.raw.movement);
-         firstzero = find(s>=0,1,'first');
+        s=sort(stream.raw.movement);      
+        firstzero = find(s>=0,1,'first');
         mdl = fitlm([1:firstzero]',s(1:firstzero)');
-        stream.settings.movement_threshold =mdl.predict(firstzero)+2*nanstd(stream.raw.movement<=mdl.predict(firstzero));
+        stream.settings.movement_threshold =mdl.predict(firstzero)+nanstd(stream.raw.movement<=mdl.predict(firstzero));
         % DEFINE MOVEMENT ONSET
         stream.raw.movement_index = mythresh(stream.raw.movement,stream.settings.movement_threshold);
-        stream.raw.movement_index(stream.raw.movement_index<=max(raw.fs./stream.settings.seglengths)+(abs(stream.settings.offline.perimovement_segment(1))*raw.fs))=[];
-        stream.raw.movement_index(stream.raw.movement_index+max(abs(stream.settings.offline.perimovement_segment(2))*raw.fs)>=raw.nsamples)=[];
+        stream.raw.movement_index(stream.raw.movement_index<=max(raw.fs./stream.settings.seglengths)+(abs(stream.settings.perimovement_segment(1))*raw.fs))=[];
+        stream.raw.movement_index(stream.raw.movement_index+max(abs(stream.settings.perimovement_segment(2))*raw.fs)>=raw.nsamples)=[];
         
         % DEFINE STREAM DATA SEGMENTS
-         [stream.raw.epochs.index,stream.raw.index,stream.raw.trl] = wjn_create_raw_epochs(stream.raw.movement_index,[stream.settings.offline.perimovement_segment(1)*raw.fs stream.settings.offline.perimovement_segment(2)*raw.fs]);
-         stream.raw.epochs.time = linspace(settings.stream.offline.perimovement_segment(1),settings.stream.offline.perimovement_segment(2),size(stream.raw.epochs.index,2));
+         [stream.raw.epochs.index,stream.raw.index,stream.raw.trl] = wjn_create_raw_epochs(stream.raw.movement_index,[stream.settings.perimovement_segment(1)*raw.fs stream.settings.perimovement_segment(2)*raw.fs]);
+         stream.raw.epochs.time = linspace(settings.stream.perimovement_segment(1),settings.stream.perimovement_segment(2),size(stream.raw.epochs.index,2));
     
          % PREPARE SEGMENTS
         stream.settings.downsample_factor = raw.fs/stream.settings.resample_rate;
@@ -202,6 +202,7 @@ for a = 1:length(movement_numbers)
                 if ~isempty(ecog.i)
                     cfdata(c,:,d)=(sum(corr(fdata(ecog.i,:)')-eye(length(stream.settings.projection_index(ecog.i)))))*stream.settings.projection_matrix(ecog.i,:);
                 end
+
             end
             
             if c<=stream.settings.normalization_samples
@@ -272,10 +273,14 @@ for a = 1:length(movement_numbers)
 end
 
 full.data = [];full.data=[];full.movement=[];
+full.epochs.data=[];full.epochs.movement=[];
 for a = 1:length(full.stream)
     full.data=cat(1,full.data,full.stream(a).data);
     full.movement = cat(1,full.movement,full.stream(a).movement.data);
+    full.epochs.data = cat(1,full.epochs.data,full.stream(a).epochs.data);
+    full.epochs.movement = cat(1,full.epochs.movement,full.stream(a).epochs.movement);
 end
+full.epochs.time = full.stream(end).epochs.time;
 full.fs = full.stream(a).fs;
 full.grid = full.stream(a).grid;
 full.dimensions = stream.dimensions;

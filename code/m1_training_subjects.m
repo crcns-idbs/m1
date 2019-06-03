@@ -1,7 +1,7 @@
 function info = m1_training_subjects(n)
 
 %% ROOT FOLDER
-%Julian
+
 settings=m1_settings;
 root = settings.dir.subjects_root;
 
@@ -51,13 +51,13 @@ info(1).lfp(1).space = 'MNI_ICBM_2009b_NLIN_ASYM';
 info(1).movement(1).name = 'grip_force_right';
 info(1).movement(1).modality = 'force';
 info(1).movement(1).effector = 'hand';
-info(1).movement(1).side = 'left';
+info(1).movement(1).side = 'right';
 info(1).movement(1).channel='analog1';
 
 info(1).movement(2).name = 'grip_force_left';
 info(1).movement(2).modality = 'force';
 info(1).movement(2).effector = 'hand';
-info(1).movement(2).side = 'right';
+info(1).movement(2).side = 'left';
 info(1).movement(2).channel = 'analog2';
 
 %% RECORDING SEGMENTS
