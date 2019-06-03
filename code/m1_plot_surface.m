@@ -4,7 +4,7 @@ settings = m1_settings;
 filename = settings.grid.ecog.surface;
 
 if ~exist('color','var')
-    color = [.5 .5 .5];
+    color = [.9 .9 .9];
 else 
     color = squeeze(color);
 end

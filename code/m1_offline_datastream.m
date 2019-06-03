@@ -200,8 +200,16 @@ for a = 1:length(movement_numbers)
                 fdata = ft_preproc_bandpassfilter(data(:,end-stream.settings.seglengths(d)+1:end),raw.fs,stream.settings.freqranges(d,:));
                 vfdata(c,:,d)=var(fdata,[],2)'*stream.settings.projection_matrix;
                 if ~isempty(ecog.i)
-                    cfdata(c,:,d)=(sum(corr(fdata(ecog.i,:)')-eye(length(stream.settings.projection_index(ecog.i)))))*stream.settings.projection_matrix(ecog.i,:);
+                    ecog_corr=(sum(corr(fdata(ecog.i,:)')-eye(length(stream.settings.projection_index(ecog.i)))))*stream.settings.projection_matrix(ecog.i,:);
+                else 
+                    ecog_corr = [];
                 end
+               if ~isempty(lfp.i)
+                    lfp_corr=(sum(corr(fdata(lfp.i,:)')-eye(length(stream.settings.projection_index(lfp.i)))))*stream.settings.projection_matrix(lfp.i,:);
+                else 
+                    lfp_corr = [];
+                end
+                cfdata(c,:,d)=nansum([ecog_corr;lfp_corr],1);
 
             end
             
@@ -272,11 +280,14 @@ for a = 1:length(movement_numbers)
     end
 end
 
-full.data = [];full.data=[];full.movement=[];
+full.data = [];full.data=[];full.movement.data=[];full.movement.speed=[];full.movement.velocity=[];full.movement.acceleration=[];
 full.epochs.data=[];full.epochs.movement=[];
 for a = 1:length(full.stream)
     full.data=cat(1,full.data,full.stream(a).data);
-    full.movement = cat(1,full.movement,full.stream(a).movement.data);
+    full.movement.data = cat(1,full.movement.data,full.stream(a).movement.data);
+    full.movement.speed = cat(1,full.movement.speed,full.stream(a).movement.speed);
+    full.movement.velocity = cat(1,full.movement.velocity,full.stream(a).movement.velocity);
+    full.movement.acceleration = cat(1,full.movement.acceleration,full.stream(a).movement.acceleration);
     full.epochs.data = cat(1,full.epochs.data,full.stream(a).epochs.data);
     full.epochs.movement = cat(1,full.epochs.movement,full.stream(a).epochs.movement);
 end
@@ -291,7 +302,7 @@ full.settings = stream.settings;
 full.active_nodes = unique([full.stream(:).active_nodes]);
 full.nsamples = size(full.data,1);
 full.time = linspace(0,full.nsamples/full.fs,full.nsamples);
-
+full.fname = ['full_stream_' fname];
 if settings.write.stream.full
     save(fullfile(info.raw_dir,['full_stream_' fname]),'-struct','full')
 end

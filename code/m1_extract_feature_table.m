@@ -1,4 +1,4 @@
-function [Xt,y]=m1_extract_feature_table(stream_file,frequencies,measures)
+function [Xt,yt]=m1_extract_feature_table(stream_file,frequencies,measures)
 
 stream = load(stream_file);
 
@@ -13,9 +13,15 @@ end
 Xt = struct2table(X);
 
 if exist('frequencies','var')
-    Xt = Xt(:,ci(frequencies,T.Properties.VariableNames));
+    Xt = Xt(:,ci(frequencies,Xt.Properties.VariableNames));
 end
 
 if exist('measures','var')
-    Xt = Xt(:,ci(measures,T.Properties.VariableNames));
+    Xt = Xt(:,ci(measures,Xt.Properties.VariableNames));
 end
+
+y.data = stream.movement.data;
+y.velocity = stream.movement.velocity;
+y.acceleration = stream.movement.acceleration;
+y.speed = stream.movement.speed;
+yt = struct2table(y); 

@@ -71,10 +71,10 @@ info(1).segments(2).channels = {'ecog1','ecog2','ecog3','ecog4','ecog5','ecog6'}
 info(1).segments(2).timewindows =  [323 500];
 info(1).segments(2).location = [];
 
-info(1).segments(3).electrodes = {'SMR'};
-info(1).segments(3).channels = {'ecog1','ecog2','ecog3','ecog4','ecog5','ecog6'};
-info(1).segments(3).timewindows =  [500 800];
-info(1).segments(3).location = [];
+info(1).segments(2).electrodes = {'SMR'};
+info(1).segments(2).channels = {'ecog1','ecog2','ecog3','ecog4','ecog5','ecog6'};
+info(1).segments(2).timewindows =  [323 500];
+info(1).segments(2).location = [];
 
 
 % NEW SUBJECT
