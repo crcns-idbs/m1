@@ -96,9 +96,9 @@ for a = 1:length(movement_numbers)
         
         figure
         subplot(3+nlfp_targets,1,1:3)
-        wjn_plot_surface(settings.grid.ecog.surface,[.9 .9 .9])
+        m1_plot_surface
         hold on
-        wjn_plot_colored_spheres(settings.grid.full.bilateral',nansum(projection_matrix),3);
+        m1_plot_spheres(settings.grid.full.bilateral,nansum(projection_matrix),3);
         camlight
         title(strrep({['ID: ' info.ID];['SEGMENT: ' num2str(segment_numbers(b))];['MOVEMENT: ' movement.name]},'_',' '),'color','w')
         

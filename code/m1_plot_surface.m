@@ -1,7 +1,5 @@
 function [p,s,v,F] = m1_plot_surface(color,dec)
 
-color(isnan(color))=0;
-
 settings = m1_settings;
 filename = settings.grid.ecog.surface;
 
@@ -10,6 +8,10 @@ if ~exist('color','var')
 else 
     color = squeeze(color);
 end
+
+
+color(isnan(color))=0;
+
 try
     try
         s=export(gifti(filename));
@@ -60,13 +62,15 @@ if ~isnumeric(color) || numel(color)==3
 elseif size(color,2)==4 || length(color)==size(s.vertices,1)
     if length(color)~=length(s.vertices)
      s.vertices=double(s.vertices)   ;
-     F = scatteredInterpolant(color(:,2),color(:,3),color(:,4),color(:,1));%,'natural'
+%      keyboard
+     F = scatteredInterpolant(color(:,2),color(:,3),color(:,4),color(:,1));
+     F.ExtrapolationMethod = 'nearest';
      v=F(s.vertices(:,1),s.vertices(:,2),s.vertices(:,3));
     else
         v=color(:,1);
     end
      p=patch('vertices',s.vertices,'faces',s.faces,'CData',v,'FaceColor','interp','EdgeColor','none');
-     set(p,'FaceVertexAlpha',abs(v));
+     %set(p,'FaceVertexAlpha',abs(v));
 %     set(p,'FaceAlpha','interp');
 
 %     if ~isempty(pks) && length(pks<10)

@@ -60,24 +60,37 @@ for a =1:length(info.lfp)
     n=length(reref)+1;
     i = ci(info.lfp(a).channels,d.channels,1);
     reref(n).name = ['lfp_' info.lfp(a).electrode_name '_' num2str(a)];
-    reref(n).channels{1,1} = [reref(a).name '_gm'];
-    reref(n).data(1,:) = nanmean(d.data(i,:));
     if isfield(info.lfp(a),'referencing') && ~isempty(info.lfp(a).rereferencing)
         reref(n).method = info.lfp(a).rereferencing;
     else
         reref(n).method = settings.preproc.rereferencing.(info.lfp(a).electrode_type);
     end
     [refdata,refchannels,reflocation,montage] = wjn_raw_rereference(d.data(i,:),reref(n).method,strcat({[reref(a).name '_']},num2str([1:length(i)]')),info.lfp(a).location);
-    reref(n).montage = [ones(1,size(montage,2));montage];
-    reref(n).data(2:length(refchannels)+1,:) = refdata;
-    reref(n).channels(2:length(refchannels)+1)=refchannels;
-    reref(n).location=[nanmean(reflocation,2) reflocation];
+    
+    
+    if settings.preproc.grandmean
+        reref(n).channels{1,1} = [reref(a).name '_gm'];
+        reref(n).data(1,:) = nanmean(d.data(i,:));
+        reref(n).location=[nanmean(reflocation,2) reflocation];
+        reref(n).montage = [ones(1,size(montage,2));montage];
+        reref(n).data(2:length(refchannels)+1,:) = refdata;
+        reref(n).channels(2:length(refchannels)+1)=refchannels;
+        reref(n).rereferencing_method= [{'grandmean'} repmat({reref(n).method},[1 length(reref(n).channels)-1])];
+       
+    else
+       reref(n).location=[reflocation];
+        reref(n).montage = [montage];
+        reref(n).data(1:length(refchannels),:) = refdata;
+        reref(n).channels(1:length(refchannels))=refchannels;
+        reref(n).rereferencing_method= repmat({reref(n).method},[1 length(reref(n).channels)]);
+      
+    end
     reref(n).chantype=repmat({'lfp'},[1 length(reref(n).channels)]);
     reref(n).electrode_type = repmat({info.lfp(a).electrode_type},[1 length(reref(n).channels)]);
     reref(n).electrode_name = repmat({info.lfp(a).electrode_name},[1 length(reref(n).channels)]);
     reref(n).side = repmat({info.lfp(a).hemisphere},[1 length(reref(n).channels)]);
     reref(n).target = repmat({info.lfp(a).target},[1 length(reref(n).channels)]);
-    reref(n).rereferencing_method= [{'grandmean'} repmat({reref(n).method},[1 length(reref(n).channels)-1])];
+    
 end
 
 %% REREFERENCE ECOG
@@ -90,16 +103,29 @@ for a =1:length(info.ecog)
     n=length(reref)+1;
     i = ci(info.ecog(a).channels,d.channels,1);
     reref(n).name = ['ecog_' info.ecog(a).electrode_name '_' num2str(a)];
-    reref(n).channels{1,1} = [reref(n).name '_gm'];
-    reref(n).data(1,:) = nanmean(d.data(i,:));
+    
     if isfield(info.ecog(a),'referencing') && ~isempty(info.ecog(a).rereferencing)
         reref(n).method = info.ecog(a).rereferencing;
     else
         reref(n).method = settings.preproc.rereferencing.(info.ecog(a).electrode_type);
     end
     [refdata,refchannels,reflocation] = wjn_raw_rereference(d.data(i,:),reref(n).method,strcat({[reref(n).name '_']},num2str([1:length(i)]')),info.ecog(a).location);
-    reref(n).data(2:length(refchannels)+1,:) = refdata;
-    reref(n).channels(2:length(refchannels)+1)=refchannels;
+    
+    if settings.preproc.grandmean
+        reref(n).channels{1,1} = [reref(a).name '_gm'];
+        reref(n).data(1,:) = nanmean(d.data(i,:));
+        reref(n).rereferencing_method= [{'grandmean'} repmat({reref(n).method},[1 length(reref(n).channels)-1])];
+        reref(n).location=[nanmean(reflocation,2) reflocation];
+        reref(n).montage = [ones(1,size(montage,2));montage];
+        reref(n).data(2:length(refchannels)+1,:) = refdata;
+        reref(n).channels(2:length(refchannels)+1)=refchannels;
+    else
+        reref(n).rereferencing_method= repmat({reref(n).method},[1 length(reref(n).channels)]);
+        reref(n).location=[reflocation];
+        reref(n).montage = [montage];
+        reref(n).data(1:length(refchannels),:) = refdata;
+        reref(n).channels(1:length(refchannels))=refchannels;
+    end
     reref(n).chantype=repmat({'ecog'},[1 length(reref(n).channels)]);
     reref(n).electrode_type = repmat({info.ecog(a).electrode_type},[1 length(reref(n).channels)]);
     reref(n).electrode_name = repmat({info.ecog(a).electrode_name},[1 length(reref(n).channels)]);
@@ -108,8 +134,8 @@ for a =1:length(info.ecog)
     reref(n).rereferencing_method= [{'grandmean'} repmat({reref(n).method},[1 length(reref(n).channels)-1])];
     
     fprintf(['TRANSFORM ECOG ' num2str(a) ' LOCATIONS \n'])
-    reref(n).location =[nanmean(reflocation,2) reflocation];;
-  
+    reref(n).location =[nanmean(reflocation,2) reflocation];
+    
 end
 
 %% MERGE REREFERENCED DATA
