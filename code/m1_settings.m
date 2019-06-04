@@ -15,7 +15,6 @@ switch config
         settings.preproc.rereferencing.AdTech6 = 'common_average';
         settings.preproc.linenoise.UPMC = 60;
         settings.preproc.linenoise.Charite = 50;
-        settings.preproc.transform.ecog_locations.UPMC = '.*1.1';
         settings.preproc.grandmean = 1;
         %% COMMON GRID ARCHITECTURE AND PROJECTION       
        
