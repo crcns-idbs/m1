@@ -7,7 +7,7 @@ end
 switch config
     case 'default'
         %% DIRECTORY LISTING
-        settings.dir.code_root = channel_finder({'crcns-m1\code','crcns-m1/code'},stringsplit(path,';'),0);
+        settings.dir.code_root = channel_finder({'m1\code','m1/code'},stringsplit(path,';'),0);
         settings.dir.template_root = fullfile(settings.dir.code_root{1}(1:end-5),'templates');
         settings.dir.subjects_root = fullfile(settings.dir.code_root{1}(1:end-5),'subjects');
         %% EPHYS PREPROCESSING SETTINGS
