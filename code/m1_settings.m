@@ -9,8 +9,7 @@ switch config
         %% DIRECTORY LISTING
         settings.dir.code_root = {[fileparts(which('m1_settings.m')),filesep]};
         settings.dir.template_root = fullfile(settings.dir.code_root{1}(1:end-5),'templates');
-        settings.dir.subjects_root = fullfile(settings.dir.code_root{1}(1:end-5),'subjects');
-        %% EPHYS PREPROCESSING SETTINGS
+         %% EPHYS PREPROCESSING SETTINGS
         settings.preproc.rereferencing.Medtronic3389 ='bipolar';
         settings.preproc.rereferencing.AdTech6 = 'common_average';
         settings.preproc.linenoise.UPMC = 60;
