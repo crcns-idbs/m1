@@ -1,13 +1,17 @@
-function basename = m1_basename(n,prefix)
+function basename = m1_basename(ID,prefix)
 
 settings = m1_settings;
-info =m1_training_subjects(n);
-basename = info.(settings.write.basename{1});
+subjects =m1_training_subjects;
+
+n = ci(ID,{subjects(:).ID});
+
+subject = subjects(n);
+basename = subject.(settings.write.basename{1});
 
 for a = 2:length(settings.write.basename)
-    basename = [basename '_' info.(settings.write.basename{a})];
+    basename = [basename '_' subject.(settings.write.basename{a})];
 end
 
-if exist('addition','var')
+if exist('prefix','var')
     basename = [prefix '_' basename];
 end

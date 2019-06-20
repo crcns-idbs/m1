@@ -1,8 +1,7 @@
 clear all;close all;
 %% need to add the code folder to path
-addpath ./code
 settings = m1_settings;
-files = m1_import_training_data(1);
+files = m1_import_training_data;
 close all
 full = m1_offline_datastream(1);
 figure

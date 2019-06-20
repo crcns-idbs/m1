@@ -12,6 +12,8 @@ switch config
          %% EPHYS PREPROCESSING SETTINGS
         settings.preproc.rereferencing.Medtronic3389 ='bipolar';
         settings.preproc.rereferencing.AdTech6 = 'common_average';
+        settings.preproc.rereferencing.AdTech8 = 'common_average';
+        settings.preproc.rereferencing.AdTech14x2 = 'common_average';
         settings.preproc.linenoise.UPMC = 60;
         settings.preproc.linenoise.Charite = 50;
         settings.preproc.grandmean = 1;
