@@ -254,7 +254,7 @@ for nsubject = 1:length(subjects)
         %% PLOT RAW DATA AND SEGMENTS
         
         fprintf(['PLOT RAW DATA AND SEGMENTS  \n'])
-        segments = session.segments;
+        segments = session.segment;
         
         figure
         wjn_plot_raw_signals(d.time,d.data,d.channels);
@@ -343,3 +343,5 @@ for nsubject = 1:length(subjects)
         
     end
 end
+
+ fprintf(['COMPLETE. \n'])
