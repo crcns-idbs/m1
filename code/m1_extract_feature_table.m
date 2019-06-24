@@ -1,11 +1,14 @@
-function [Xt,yt]=m1_extract_feature_table(stream_file,frequencies,measures)
+function [Xt,yt]=m1_extract_feature_table(stream_file,frequencies,measures,gridpoints)
 
 stream = load(stream_file);
+if ~exist('gridpoints','var')
+    gridpoints = 1:length(stream.grid);
+end
 
 for a = 1:length(stream.measures)
     for b = 1:length(stream.frequencies)
-        for c = 1:length(stream.grid)
-            X.([stream.frequencies{b} '_' stream.measures{a} '_' num2str(c)]) = stream.data(:,c,b,a);
+        for c = 1:length(gridpoints)
+            X.([stream.frequencies{b} '_' stream.measures{a} '_' num2str(c)]) = stream.data(:,gridpoints(c),b,a);
         end
     end
 end
