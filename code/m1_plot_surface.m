@@ -1,17 +1,15 @@
-function [p,s,v,F] = m1_plot_surface(color,dec)
+function [p,s,v,F] = m1_plot_surface(filename,color,dec)
 
 settings = m1_settings;
-filename = settings.grid.ecog.surface;
+if ~exist('filename','var')
+    filename = settings.grid.ecog.surface;
+end
 
 if ~exist('color','var')
-    color = [.9 .9 .9];
+    color = [.5 .5 .5];
 else 
     color = squeeze(color);
 end
-
-
-color(isnan(color))=0;
-
 try
     try
         s=export(gifti(filename));
@@ -22,7 +20,7 @@ try
 
 catch
     try
-    filename=wjn_extract_surface(filename);
+    filename=m1_extract_surface(filename);
     s=export(gifti(filename));
     catch
         s=filename;
@@ -32,16 +30,16 @@ end
 
 
 if ~isfield(s,'vertices')
-try
-    s.vertices = s.Vertices;
-    s.faces = s.Faces;
-catch
-    s=load(s);
-    s.vertices = s.Vertices;
-    s.faces = s.Faces;
+    try
+        s=load(s);
+    end
     
+if isfield(s,'Vertices')
+    s.vertices = s.Vertices;
+    s.faces = s.Faces;  
 end
 end
+
 if exist('dec','var')
     s = reducepatch(s,length(s.faces)/dec);
 end
@@ -62,15 +60,13 @@ if ~isnumeric(color) || numel(color)==3
 elseif size(color,2)==4 || length(color)==size(s.vertices,1)
     if length(color)~=length(s.vertices)
      s.vertices=double(s.vertices)   ;
-%      keyboard
-     F = scatteredInterpolant(color(:,2),color(:,3),color(:,4),color(:,1));
-     F.ExtrapolationMethod = 'nearest';
+     F = scatteredInterpolant(color(:,2),color(:,3),color(:,4),color(:,1));%,'natural'
      v=F(s.vertices(:,1),s.vertices(:,2),s.vertices(:,3));
     else
         v=color(:,1);
     end
      p=patch('vertices',s.vertices,'faces',s.faces,'CData',v,'FaceColor','interp','EdgeColor','none');
-     %set(p,'FaceVertexAlpha',abs(v));
+     set(p,'FaceVertexAlpha',abs(v));
 %     set(p,'FaceAlpha','interp');
 
 %     if ~isempty(pks) && length(pks<10)

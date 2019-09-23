@@ -1,4 +1,4 @@
-function [Xt,yt]=m1_extract_feature_table(stream_file,frequencies,measures,gridpoints)
+function [Xt,yt,subject]=m1_extract_feature_table(stream_file,frequencies,measures,gridpoints)
 
 stream = load(stream_file);
 if ~exist('gridpoints','var')
@@ -28,3 +28,4 @@ y.velocity = stream.movement.velocity;
 y.acceleration = stream.movement.acceleration;
 y.speed = stream.movement.speed;
 yt = struct2table(y); 
+subject = stream.subject;

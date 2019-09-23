@@ -3,7 +3,8 @@ function basename = m1_basename(ID,prefix)
 settings = m1_settings;
 subjects =m1_training_subjects;
 
-n = ci(ID,{subjects(:).ID});
+
+n = m1_ci(ID,{subjects(:).ID});
 
 subject = subjects(n);
 basename = subject.(settings.write.basename{1});

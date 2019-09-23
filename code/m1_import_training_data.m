@@ -8,7 +8,7 @@ subjects = m1_training_subjects(n);
 settings = m1_settings('default');
 
 for nsubject = 1:length(subjects)
-    keep nsubject subjects settings
+    m1_keep nsubject subjects settings
     subject = subjects(nsubject);
     
     sessions = subject.session;
@@ -20,8 +20,8 @@ for nsubject = 1:length(subjects)
         
         %% PREPARE RAW DATA
         fprintf(['PREPARE RAW DATA FOR SESSION ' num2str(nsessions) ' \n'])
-        session_name = m1_basename(subject.ID,['session_' num2str(nsessions)]);
-        fprintf(session_name)
+        session_name = m1_session_name(subject.ID,nsessions);
+        fprintf([session_name ' \n'])
         
         d=[];
         switch subject.center
@@ -35,65 +35,70 @@ for nsubject = 1:length(subjects)
                 d.time = linspace(0,d.nsamples/d.fs,d.nsamples);
         end
         
-        
+        if isfield('session','lfp')
         for a = 1:length(session.lfp)
-            d.electrode_name(ci(session.lfp(a).channels,d.channels,1)) = {session.lfp(a).electrode_name};
-            d.chantype(ci(session.lfp(a).channels,d.channels,1))={'lfp'};
+            d.electrode_name(m1_ci(session.lfp(a).channels,d.channels,1)) = {session.lfp(a).electrode_name};
+            d.chantype(m1_ci(session.lfp(a).channels,d.channels,1))={'lfp'};
             try
-                d.location(:,ci(session.lfp(a).channels,d.channels,1))=session.lfp(a).location;
+                d.location(:,m1_ci(session.lfp(a).channels,d.channels,1))=session.lfp(a).location;
             catch
-                d.location(:,ci(session.lfp(a).channels,d.channels,1))=session.lfp(a).location';
+                d.location(:,m1_ci(session.lfp(a).channels,d.channels,1))=session.lfp(a).location';
             end
-            d.electrode_type(ci(session.lfp(a).channels,d.channels,1)) = {session.lfp(a).electrode_type};
-            d.side(ci(session.lfp(a).channels,d.channels,1)) = {session.lfp(a).hemisphere};
-            d.target(ci(session.lfp(a).channels,d.channels,1)) = {session.lfp(a).target};
+            d.electrode_type(m1_ci(session.lfp(a).channels,d.channels,1)) = {session.lfp(a).electrode_type};
+            d.side(m1_ci(session.lfp(a).channels,d.channels,1)) = {session.lfp(a).hemisphere};
+            d.target(m1_ci(session.lfp(a).channels,d.channels,1)) = {session.lfp(a).target};
             
         end
+        end
         
+        if isfield(session,'ecog')
         for a = 1:length(session.ecog)
-            d.electrode_name(ci(session.ecog(a).channels,d.channels,1)) = {session.ecog(a).electrode_name};
-            d.chantype(ci(session.ecog(a).channels,d.channels,1))={'ecog'};
+            d.electrode_name(m1_ci(session.ecog(a).channels,d.channels,1)) = {session.ecog(a).electrode_name};
+            d.chantype(m1_ci(session.ecog(a).channels,d.channels,1))={'ecog'};
             try
-                %     d.location(:,ci(session.ecog(a).channels,d.channels,1))=m1_transform_ecog_locations(session.ecog(a).location,subject.center);
-                d.location(:,ci(session.ecog(a).channels,d.channels,1))=session.ecog(a).location;
+                %     d.location(:,m1_ci(session.ecog(a).channels,d.channels,1))=m1_transform_ecog_locations(session.ecog(a).location,subject.center);
+                d.location(:,m1_ci(session.ecog(a).channels,d.channels,1))=session.ecog(a).location;
                 
             catch
-                %d.location(:,ci(session.ecog(a).channels,d.channels,1))=m1_transform_ecog_locations(session.ecog(a).location,subject.center)';
-                d.location(:,ci(session.ecog(a).channels,d.channels,1))=session.ecog(a).location';
+                %d.location(:,m1_ci(session.ecog(a).channels,d.channels,1))=m1_transform_ecog_locations(session.ecog(a).location,subject.center)';
+                d.location(:,m1_ci(session.ecog(a).channels,d.channels,1))=session.ecog(a).location';
             end
-            d.electrode_type(ci(session.ecog(a).channels,d.channels,1)) = {session.ecog(a).electrode_type};
-            d.side(ci(session.ecog(a).channels,d.channels,1)) = {session.ecog(a).hemisphere};
-            d.target(ci(session.ecog(a).channels,d.channels,1)) = {session.ecog(a).target};
+            d.electrode_type(m1_ci(session.ecog(a).channels,d.channels,1)) = {session.ecog(a).electrode_type};
+            d.side(m1_ci(session.ecog(a).channels,d.channels,1)) = {session.ecog(a).hemisphere};
+            d.target(m1_ci(session.ecog(a).channels,d.channels,1)) = {session.ecog(a).target};
+        end
         end
         
         for a = 1:length(session.movement)
-            d.electrode_name(ci(session.movement(a).channel,d.channels,1)) = {session.movement(a).name};
-            d.chantype(ci(session.movement(a).channel,d.channels,1))={'mvmt'};
-            d.location(:,ci(session.movement(a).channel,d.channels,1))=[nan(3,1)];
-            d.electrode_type(ci(session.movement(a).channel,d.channels,1)) = {session.movement(a).modality};
-            d.side(ci(session.movement(a).channel,d.channels,1)) = {session.movement(a).side};
-            d.target(ci(session.movement(a).channel,d.channels,1)) = {session.movement(a).effector};
+            d.electrode_name(m1_ci(session.movement(a).channel,d.channels,1)) = {session.movement(a).name};
+            d.chantype(m1_ci(session.movement(a).channel,d.channels,1))={'mvmt'};
+            d.location(:,m1_ci(session.movement(a).channel,d.channels,1))=[nan(3,1)];
+            d.electrode_type(m1_ci(session.movement(a).channel,d.channels,1)) = {session.movement(a).modality};
+            d.side(m1_ci(session.movement(a).channel,d.channels,1)) = {session.movement(a).side};
+            d.target(m1_ci(session.movement(a).channel,d.channels,1)) = {session.movement(a).effector};
         end
         
-        
+        d.session = session;
+        d.nsession = nsessions;
         clear raw
         
         
         %% REREFERENCE LFP
         
         reref=[];
+        if isfield(session,'lfp')
         for a =1:length(session.lfp)
             
             fprintf(['REREFERENCE LFP ' num2str(a) ' \n'])
             n=length(reref)+1;
-            i = ci(session.lfp(a).channels,d.channels,1);
+            i = m1_ci(session.lfp(a).channels,d.channels,1);
             reref(n).name = ['lfp_' session.lfp(a).electrode_name '_' num2str(a)];
             if isfield(session.lfp(a),'referencing') && ~isempty(session.lfp(a).rereferencing)
                 reref(n).method = session.lfp(a).rereferencing;
             else
                 reref(n).method = settings.preproc.rereferencing.(session.lfp(a).electrode_type);
             end
-            [refdata,refchannels,reflocation,montage] = wjn_raw_rereference(d.data(i,:),reref(n).method,strcat({[reref(a).name '_']},num2str([1:length(i)]')),session.lfp(a).location);
+            [refdata,refchannels,reflocation,montage] = m1_raw_rereference(d.data(i,:),reref(n).method,strcat({[reref(a).name '_']},num2str([1:length(i)]')),session.lfp(a).location);
             
             
             if settings.preproc.grandmean
@@ -120,16 +125,17 @@ for nsubject = 1:length(subjects)
             reref(n).target = repmat({session.lfp(a).target},[1 length(reref(n).channels)]);
             
         end
+        end
         
         %% REREFERENCE ECOG
         if ~exist('reref','var')
             reref=[];
         end
-        
+        if isfield(session,'ecog')
         for a =1:length(session.ecog)
             fprintf(['REREFERENCE ECOG ' num2str(a) ' \n'])
             n=length(reref)+1;
-            i = ci(session.ecog(a).channels,d.channels,1);
+            i = m1_ci(session.ecog(a).channels,d.channels,1);
             reref(n).name = ['ecog_' session.ecog(a).electrode_name '_' num2str(a)];
             
             if isfield(session.ecog(a),'rereferencing') && ~isempty(session.ecog(a).rereferencing)
@@ -137,7 +143,11 @@ for nsubject = 1:length(subjects)
             else
                 reref(n).method = settings.preproc.rereferencing.(session.ecog(a).electrode_type);
             end
-            [refdata,refchannels,reflocation] = wjn_raw_rereference(d.data(i,:),reref(n).method,strcat({[reref(n).name '_']},num2str([1:length(i)]')),session.ecog(a).location);
+            [refdata,refchannels,reflocation,montage] = m1_raw_rereference(d.data(i,:),reref(n).method,strcat({[reref(n).name '_']},num2str([1:length(i)]')),session.ecog(a).location);
+            
+            if ~exist('montage','var')
+                montage =[];
+            end
             
             if settings.preproc.grandmean
                 reref(n).channels{1,1} = [reref(a).name '_gm'];
@@ -165,6 +175,8 @@ for nsubject = 1:length(subjects)
             reref(n).location =[nanmean(reflocation,2) reflocation];
             
         end
+        end
+
         
         %% MERGE REREFERENCED DATA
         
@@ -198,7 +210,7 @@ for nsubject = 1:length(subjects)
             m.channels{a} = ['mvmt_' session.movement(a).name '_' num2str(a)];
             fprintf(['GET MOVEMENT ' num2str(a) ' \n'])
             fprintf([m.channels{a} ' \n'])
-            m.data(a,:) = wjn_zscore(d.data(ci(session.movement(a).channel,d.channels,1),:));
+            m.data(a,:) = m1_zscore(d.data(m1_ci(session.movement(a).channel,d.channels,1),:));
             m.chantype{a} = 'zmvmt';
             m.location(:,a) = nan(3,1);
             m.electrode_type{a} = session.movement(a).modality;
@@ -230,13 +242,15 @@ for nsubject = 1:length(subjects)
         raw.nsamples = d.nsamples;
         raw.fs = d.fs;
         raw.session = session;
+        raw.nsession = nsessions;
         raw.subject = subject;
         
         if settings.write.preproc.mergefile
             save(fullfile(subject.raw_dir,raw.fname),'-struct','raw')
             if settings.write.preproc.spm
-                D=wjn_import_rawdata(fullfile(subject.raw_dir,['spmeeg_' raw.fname]),raw.fdata,raw.channels,raw.fs);
+                D=m1_import_rawdata(fullfile(subject.raw_dir,['spmeeg_' raw.fname]),raw.fdata,raw.channels,raw.fs);
                 D.session = session;
+                D.nsession = nsessions;
                 D.subject = subject;
                 D.location = raw.location;
                 D.rereferenced = raw.rereferenced;
@@ -257,31 +271,32 @@ for nsubject = 1:length(subjects)
         segments = session.segment;
         
         figure
-        wjn_plot_raw_signals(d.time,d.data,d.channels);
+        m1_plot_raw_signals(d.time,d.data,d.channels);
         hold on
         for a =1:length(segments)
-            segment_name = m1_basename(subject.ID,['segment_' num2str(a) '_session_' num2str(nsessions)]);
-            segments(a).index = wjn_index_segments(segments(a).timewindows,d.time);
-            i = ci(segments(a).electrodes,d.electrode_name);
+            segment_name = m1_segment_name(subject.ID,nsessions,a);
+            segments(a).index = m1_index_segments(segments(a).timewindows,d.time);
+            i = m1_ci(segments(a).electrodes,d.electrode_name);
             
             for c=1:length(i)
                 plot(d.time(segments(a).index),ones(size(segments(a).index)).*(i(c)+.5),'color','k');
             end
             text(d.time(segments(a).index(1)),length(d.channels)+.5,num2str(a));
         end
-        figone(14,30)
-        title(subject.ID)
+        m1_figsize(14,30)
+        title(strrep(segment_name,'_',' '))
         
         if settings.write.preproc.figures
-            myprint(fullfile(subject.raw_dir,'figures',['segments_' session_name]))
+            m1_figprint(fullfile(subject.raw_dir,'figures',['segments_' session_name '_' num2str(nsessions)]))
         end
         
         
         for a = 1:length(segments)
-            channel_selection = [intersect(ci(segments(a).electrodes,raw.electrode_name),find(raw.rereferenced)) ci('zmvmt',raw.chantype,1)];
+            channel_selection = [intersect(m1_ci(segments(a).electrodes,raw.electrode_name),find(raw.rereferenced)) m1_ci('zmvmt',raw.chantype,1)];
             seg=[];
-            seg.fname = m1_basename(subject.ID,['segment_' num2str(a) '_session_' num2str(nsessions)]);
+            seg.fname = m1_segment_name(subject.ID,nsessions,a);
             seg.session=session;
+            seg.nsession = nsessions;
             seg.fs=raw.fs;
             seg.electrode_type = raw.electrode_type(channel_selection);
             seg.electrode_name = raw.electrode_name(channel_selection);
@@ -293,17 +308,17 @@ for nsubject = 1:length(subjects)
             seg.location = raw.location(:,channel_selection);
             if isfield(segments(a),'location') && ~isempty(segments(a).location)
                 for b = 1:length(segments(a).electrodes)
-                    selected_channels = raw.channels(intersect(ci(segments(a).channels,raw.channels,1),ci(segments(a).electrodes{b},raw.electrode_name,1)));
-                    rereferenced_indices = ci(segments(a).electrodes{b},seg.electrode_name,1);
+                    selected_channels = raw.channels(intersect(m1_ci(segments(a).channels,raw.channels,1),m1_ci(segments(a).electrodes{b},raw.electrode_name,1)));
+                    rereferenced_indices = m1_ci(segments(a).electrodes{b},seg.electrode_name,1);
                     [rereferencing_methods,method_indices,channel_indices] = unique(seg.rereferencing_method(rereferenced_indices));
                     for c = 1:length(rereferencing_methods)
                         switch rereferencing_methods{c}
                             case 'grandmean'
-                                seg.location(:,rereferenced_indices(channel_indices==c)) = nanmean(segments(a).location(:,ci(selected_channels,segments(a).channels)),2);
+                                seg.location(:,rereferenced_indices(channel_indices==c)) = nanmean(segments(a).location(:,m1_ci(selected_channels,segments(a).channels)),2);
                             case 'common_average'
-                                seg.location(:,rereferenced_indices(channel_indices==c)) = segments(a).location(:,ci(selected_channels,segments(a).channels));
+                                seg.location(:,rereferenced_indices(channel_indices==c)) = segments(a).location(:,m1_ci(selected_channels,segments(a).channels));
                             case 'bipolar'
-                                seg.location(:,rereferenced_indices(channel_indices==c)) = wjn_rereference_bipolar_location(segments(a).location(:,ci(selected_channels,segments(a).channels)));
+                                seg.location(:,rereferenced_indices(channel_indices==c)) = m1_rereference_bipolar_location(segments(a).location(:,m1_ci(selected_channels,segments(a).channels)));
                         end
                     end
                 end
@@ -313,6 +328,7 @@ for nsubject = 1:length(subjects)
             seg.nsamples = numel(segments(a).index);
             seg.time = linspace(0,seg.nsamples/seg.fs,seg.nsamples);
             seg.segment = segments(a);
+            seg.nsegment = a;
             if isfield(segments(a),'location') && ~isempty(segments(a).location)
                 seg.location=segments(a).location;
             end
@@ -323,11 +339,13 @@ for nsubject = 1:length(subjects)
                 fnames{a} = fullfile(subject.raw_dir,seg.fname);
                 
                 if settings.write.preproc.spm
-                    D=wjn_import_rawdata(fullfile(subject.raw_dir,['spmeeg_' seg.fname]),seg.data,seg.channels,seg.fs);
+                    D=m1_import_rawdata(fullfile(subject.raw_dir,['spmeeg_' seg.fname]),seg.data,seg.channels,seg.fs);
                     
                     D.original_time = seg.original_time;
                     D.session = session;
+                    D.nsession = nsessions;
                     D.segment = segments(a);
+                    D.nsegment = a;
                     D.location = seg.location;
                     D.rereferencing_method = seg.rereferencing_method;
                     D.electrode_type = seg.electrode_type;
