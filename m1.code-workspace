@@ -1,0 +1,22 @@
+{
+	"folders": [
+		{
+			"path": "electrodes"
+		},
+		{
+			"path": "matlab"
+		},
+		{
+			"path": "python"
+		},
+		{
+			"path": "templates"
+		},
+		{
+			"path": "unix"
+		},
+		{
+			"path": "wiki"
+		}
+	]
+}
